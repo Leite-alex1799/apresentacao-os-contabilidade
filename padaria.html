@@ -45,6 +45,7 @@
   .top{position:sticky;top:0;z-index:20;background:rgba(251,248,243,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair);
        display:flex;align-items:center;gap:16px;padding:14px 30px}
   .top .hb{display:none}
+  .nav-backdrop{display:none}
   .top h1{font-size:1.05rem}
   .top .co{display:flex;flex-direction:column}
   .top .co small{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
@@ -202,7 +203,11 @@
   @media(max-width:1150px){.cols-3{grid-template-columns:1fr 1fr}.cols-3 .span2{grid-column:1/-1}.ins{grid-template-columns:1fr 1fr}}
   @media(max-width:980px){
     .app{grid-template-columns:1fr}
-    .side{display:none}
+    .side{position:fixed;left:0;top:0;height:100vh;width:min(300px,84vw);z-index:60;transform:translateX(-100%);transition:transform .28s ease;box-shadow:0 20px 60px rgba(42,33,27,.3)}
+    body.nav-open .side{transform:translateX(0)}
+    .nav-backdrop{display:block;position:fixed;inset:0;background:rgba(42,33,27,.45);z-index:55;opacity:0;visibility:hidden;transition:opacity .28s}
+    body.nav-open .nav-backdrop{opacity:1;visibility:visible}
+    body.nav-open{overflow:hidden}
     .top .hb{display:grid}
     .kpis{grid-template-columns:1fr 1fr}
     .cols-2,.cols-2b{grid-template-columns:1fr}
@@ -229,6 +234,7 @@
 </style>
 
 <div class="app">
+  <div class="nav-backdrop" onclick="closeNav()"></div>
   <aside class="side">
     <div class="brand"><div class="logo">🥖</div><div><b>Padaria do João</b><span>Painel Financeiro</span></div></div>
     <nav class="nav" id="nav"></nav>
@@ -237,7 +243,7 @@
 
   <div class="main">
     <header class="top">
-      <div class="icobtn hb" onclick="document.querySelector('.side').style.display='flex'"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></div>
+      <div class="icobtn hb" onclick="document.body.classList.toggle('nav-open')"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></div>
       <div class="co"><small>Contabilidade Meridiano</small><h1>Padaria do Joao ME</h1></div>
       <div class="spacer"></div>
       <div class="pill" style="cursor:default"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Julho / 2026</div>
@@ -321,7 +327,9 @@ function H(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)
 /* menu */
 var MENU=[["Visão geral","M3 13h8V3H3zM13 21h8V11h-8zM13 3v6h8V3zM3 21h8v-6H3z","top",1],["Indicadores","M22 12h-4l-3 9L9 3l-3 9H2","indicadores",0],["Vencimentos","M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z","vencimentos",0],["Documentos","M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6","documentos",0],["Meu contador","M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z","contador",0]];
 var nav=document.getElementById('nav');
-MENU.forEach(function(m){var a=H('a',m[3]?'on':'','<svg viewBox="0 0 24 24"><path d="'+m[1]+'"/></svg>'+m[0]);a.href='#'+m[2];a.onclick=function(){document.querySelectorAll('#nav a').forEach(function(x){x.classList.remove('on')});a.classList.add('on')};nav.appendChild(a)});
+MENU.forEach(function(m){var a=H('a',m[3]?'on':'','<svg viewBox="0 0 24 24"><path d="'+m[1]+'"/></svg>'+m[0]);a.href='#'+m[2];a.onclick=function(){document.querySelectorAll('#nav a').forEach(function(x){x.classList.remove('on')});a.classList.add('on');closeNav();};nav.appendChild(a)});
+function closeNav(){document.body.classList.remove('nav-open');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
 
 /* KPIs */
 var arrowUp='<svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>';
